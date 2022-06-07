@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Restaurant</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="result_no_loaded">Result Could not Be found </string>
+    <string name="conversion_copied">Conversion Copied</string>
+</resources>
