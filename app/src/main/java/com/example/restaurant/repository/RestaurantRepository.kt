@@ -22,55 +22,48 @@ class RestaurantRepository @Inject constructor(
 
 ): ResturantImp{
     override suspend fun getRestaurant(): Flow<List<Restaurant>> {
-     try {
-         val json= context.resources.
-         openRawResource(context.resources.getIdentifier("restaurant","raw",context.packageName))
-             .bufferedReader()
-             .use {
-                 it.readText()
+        return flow {
+             val json= context.resources.
+             openRawResource(context.resources.getIdentifier("restaurant","raw",context.packageName))
+                 .bufferedReader()
+                 .use {
+                     it.readText()
+                 }
+
+             val jsonObject=JSONObject(json)
+             val restaurants=  jsonObject.getJSONArray("restaurants") as JSONArray
+             var list= arrayListOf<Restaurant>()
+
+             for(i in 0 until restaurants.length())
+             {
+                 val rest = Gson().fromJson(restaurants.getString(i), Restaurant::class.java)
+                 list.add(rest)
+
              }
-
-         val jsonObject=JSONObject(json)
-         val restaurants=  jsonObject.getJSONArray("restaurants") as JSONArray
-         var list= arrayListOf<Restaurant>()
-
-         for(i in 0 until restaurants.length())
-         {
-             val rest = Gson().fromJson(restaurants.getString(i), Restaurant::class.java)
-           //  val restaurant =  restaurants.get(i)  as Restaurant
-             list.add(rest)
-             //list.add(restaurant)
-         }
-         return flow {
              emit(list)
-         }.flowOn(Dispatchers.Default)
-     }   catch (err:Exception)
-     {
-         Log.e("RestaurantRepo","err"+ " "+err.message)
-         return flow {
-             emit(emptyList<Restaurant>())
-         }.flowOn(Dispatchers.Default)
-     }
+
+        }.flowOn(Dispatchers.Default)
+
 
     }
     override suspend fun getMenu(): Flow<List<Menu>> {
-        val json= context.resources.
-        openRawResource(context.resources.getIdentifier("menu","raw",context.packageName))
-            .bufferedReader()
-            .use {
-                it.readText()
-            }
-
-        val jsonObject=JSONObject(json)
-        val restaurants=  jsonObject.getJSONArray("menus") as JSONArray
-        var list= arrayListOf<Menu>()
-        for(i in 0 until restaurants.length())
-        {
-            val menu = Gson().fromJson(restaurants.getString(i), Menu::class.java)
-          //  val restaurant =  restaurants.get(i)  as Menu
-            list.add(menu)
-        }
         return flow {
+            val json= context.resources.
+            openRawResource(context.resources.getIdentifier("menu","raw",context.packageName))
+                .bufferedReader()
+                .use {
+                    it.readText()
+                }
+
+            val jsonObject=JSONObject(json)
+            val restaurants=  jsonObject.getJSONArray("menus") as JSONArray
+            var list= arrayListOf<Menu>()
+            for(i in 0 until restaurants.length())
+            {
+                val menu = Gson().fromJson(restaurants.getString(i), Menu::class.java)
+                //  val restaurant =  restaurants.get(i)  as Menu
+                list.add(menu)
+            }
             emit(list)
         }.flowOn(Dispatchers.Default)
     }
